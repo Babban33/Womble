@@ -1,6 +1,45 @@
 'use client';
+import { login, signup } from "./actions";
+
 interface UserFormProps { activeTab: string;} 
 export default function UserForm( {activeTab}: UserFormProps){
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const nameInput = (document.getElementById("name") as HTMLInputElement)?.value.trim();
+        const emailInput = (document.getElementById("email") as HTMLInputElement)?.value.trim();
+        const passwordInput = (document.getElementById("password") as HTMLInputElement)?.value.trim();
+    
+        // Basic validation
+        if (activeTab === "register" && !nameInput) {
+          alert("Please enter your name");
+          return;
+        }
+        if (!emailInput || !passwordInput) {
+          alert("Please fill in all required fields");
+          return;
+        }
+    
+        // Log input values
+        console.log("Name:", nameInput || "(Not Applicable)");
+        console.log("Email:", emailInput);
+        console.log("Password:", passwordInput);
+
+        const formData = new FormData();
+        if (activeTab === "register") {
+            formData.append("name", nameInput);
+        }
+        formData.append("email", emailInput);
+        formData.append("password", passwordInput);
+
+        const name = formData.get("name"); 
+        console.log("Name:", name);
+
+        if (activeTab === "login") {
+            await login(formData);
+        } else if (activeTab === "register") {
+            await signup(formData);
+        }
+    };
     return(
         <form className="w-full max-w-sm space-y-4">
             {activeTab === "register" && (
@@ -48,12 +87,23 @@ export default function UserForm( {activeTab}: UserFormProps){
                 />
             </div>
             <div className="flex justify-center">
-                <button
-                    type="submit"
-                    className="bg-red-500 text-white py-2 rounded-full hover:bg-red-600 px-4 shadow-md shadow-red-500/50"
-                >
-                    Join for free
-                </button>
+                {activeTab==="login"? (
+                    <button
+                        type="submit"
+                        onClick={handleSubmit}
+                        className="bg-red-500 text-white py-2 rounded-full hover:bg-red-600 px-4 shadow-md shadow-red-500/50"
+                    >
+                        Login
+                    </button>
+                    ):(
+                    <button
+                        type="submit"
+                        onClick={handleSubmit}
+                        className="bg-red-500 text-white py-2 rounded-full hover:bg-red-600 px-4 shadow-md shadow-red-500/50"
+                    >
+                        Join for free
+                    </button>
+                )}
             </div>
         </form>
     )
